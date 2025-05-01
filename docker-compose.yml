@@ -13,10 +13,8 @@ services:
     networks:
       - db
     restart: unless-stopped
-
 networks:
   db:
     driver: bridge
-
 volumes:
   db:

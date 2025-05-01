@@ -9,17 +9,19 @@ public class StudentRequestDTO {
     private UniversityDTO university;
     private String password;
     private String dob;
+    private char sex;
 
     public StudentRequestDTO() {
     }
 
-    public StudentRequestDTO(String firstName, String lastName, String email, UniversityDTO university, String password, String dob) {
+    public StudentRequestDTO(String firstName, String lastName, String email, UniversityDTO university, String password, String dob, char sex) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.university = university;
         this.password = password;
         this.dob = dob;
+        this.sex = sex;
     }
 
     public String getFirstName() {
@@ -44,5 +46,9 @@ public class StudentRequestDTO {
 
     public String getDob() {
         return dob;
+    }
+
+    public char getSex() {
+        return sex;
     }
 }

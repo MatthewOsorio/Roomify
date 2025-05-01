@@ -31,13 +31,15 @@ public class Student {
     @ManyToOne
     @JoinColumn(name = "university_id", referencedColumnName = "id")
     private University university;
+
     private String password;
     private LocalDate dob;
+    private char sex;
 
     public Student() {
     }
 
-    public Student(Long id, String firstName, String lastName, String email, University university, String password, LocalDate dob) {
+    public Student(Long id, String firstName, String lastName, String email, University university, String password, LocalDate dob, char sex) {
         this.id = id;
         this.firstName = firstName;
         this.lastName = lastName;
@@ -45,14 +47,16 @@ public class Student {
         this.university = university;
         this.password = password;
         this.dob = dob;
+        this.sex = sex;
     }
 
-    public Student(String firstName, String lastName, String email, String password, LocalDate dob) {
+    public Student(String firstName, String lastName, String email, University university, String password, String dob, char sex) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-        this.dob = dob;
+        this.dob = LocalDate.parse(dob);
+        this.sex = sex;
     }
 
     public Long getId() {
@@ -102,6 +106,14 @@ public class Student {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public char getSex(){
+        return sex;
+    }
+
+    public void setSex(char sex){
+        this.sex = sex;
     }
 
     public Integer getAge() {

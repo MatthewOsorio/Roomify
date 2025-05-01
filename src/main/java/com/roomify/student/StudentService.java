@@ -5,21 +5,34 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.roomify.student.StudentDTO.StudentRequestDTO;
+import com.roomify.university.University;
+import com.roomify.university.UniversityRepository;
+
 @Service
 public class StudentService {
     private final StudentRepository studentRepository;
+    private final UniversityRepository universityRepository;
 
     @Autowired
-    public StudentService(StudentRepository studentRepository) {
+    public StudentService(StudentRepository studentRepository, UniversityRepository universityRepository) {
         this.studentRepository = studentRepository;
+        this.universityRepository = universityRepository;
     }
-    public void addStudent(Student student) {
-        Optional<Student> existingStudent = studentRepository.findStudentByEmail(student.getEmail());
+
+    public void addStudent(StudentRequestDTO student) {
+        Optional<Student> existingStudent = studentRepository.findStudentByEmailIgnoreCase(student.getEmail());
 
         if (existingStudent.isPresent()) {
-            throw new IllegalStateException("Student with ID " + student.getId() + " already exists.");
+            throw new IllegalStateException("Student with email " + student.getEmail() + " already exists.");
         }
-        studentRepository.save(student);
-    }
+        
+        University university = universityRepository.findByNameIgnoreCase(student.getUniversity().getName()).orElseGet(() -> {
+            University newUniversity = new University(student.getUniversity());
+            return universityRepository.save(newUniversity);
+        });
 
+        Student newStudent = new Student(student.getFirstName(), student.getLastName(), student.getEmail(), university ,student.getPassword(), student.getDob(), student.getSex());
+        studentRepository.save(newStudent);
+    }
 }

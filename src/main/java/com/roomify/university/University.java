@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.roomify.student.Student;
+import com.roomify.university.UniversityDTO.UniversityDTO;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
@@ -52,6 +53,14 @@ public class University {
         this.street = street;
         this.zipCode = zipCode;
         this.state = state;
+    }
+
+    public University(UniversityDTO dto){
+        this.name = dto.getName();
+        this.city = dto.getCity();
+        this.street = dto.getState();
+        this.zipCode = dto.getZipCode();
+        this.state = dto.getState();
     }
 
     public Long getId() {

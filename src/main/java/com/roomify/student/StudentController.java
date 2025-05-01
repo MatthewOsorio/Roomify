@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.roomify.student.StudentDTO.StudentRequestDTO;
+
 @RestController
 @RequestMapping(path = "api/v1/student")
 public class StudentController {
@@ -17,9 +19,8 @@ public class StudentController {
     }
 
     @PostMapping
-    public void addStudent(@RequestBody Student student) {
-        studentService.addStudent(student);
+    public void addStudent(@RequestBody StudentRequestDTO studentDTO) {
+        studentService.addStudent(studentDTO);
     }
-
 }
 
