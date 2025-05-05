@@ -2,15 +2,23 @@ package com.roomify.student;
 
 import java.time.LocalDate;
 import java.time.Period;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
+import com.roomify.survery.Answer;
 import com.roomify.university.University;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.SequenceGenerator;
 import jakarta.persistence.Table;
 import jakarta.persistence.UniqueConstraint;
@@ -27,14 +35,16 @@ public class Student {
     private String firstName;
     private String lastName;
     private String email;
-
-    @ManyToOne
-    @JoinColumn(name = "university_id", referencedColumnName = "id")
-    private University university;
-
     private String password;
     private LocalDate dob;
     private char sex;
+
+    @ManyToOne
+    @JoinColumn(name = "university_id", referencedColumnName = "id", nullable = false)
+    private University university;
+
+    @OneToMany(mappedBy = "student", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY) 
+    private List<Answer> answers = new ArrayList<>();
 
     public Student() {
     }
@@ -54,6 +64,7 @@ public class Student {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
+        this.university = university;
         this.password = password;
         this.dob = LocalDate.parse(dob);
         this.sex = sex;
@@ -118,5 +129,27 @@ public class Student {
 
     public Integer getAge() {
         return Period.between(dob, LocalDate.now()).getYears();
+    }
+
+    public void addAnswer(Answer answer) {
+        answers.add(answer);
+        answer.setStudent(this);
+    }
+
+    public List<Answer> getAnswers() {
+        return answers;
+    }
+
+    @Override
+    public String toString() {
+        return "Student {" +
+                "id=" + id +
+                ", firstName='" + firstName + '\'' +
+                ", lastName='" + lastName + '\'' +
+                ", email='" + email + '\'' +
+                ", dob=" + dob +
+                ", sex=" + sex +
+                ", university=" + (university != null ? university.getName() : "null") +
+                '}';
     }
 }

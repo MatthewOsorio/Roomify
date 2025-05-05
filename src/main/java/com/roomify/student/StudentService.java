@@ -27,12 +27,17 @@ public class StudentService {
             throw new IllegalStateException("Student with email " + student.getEmail() + " already exists.");
         }
         
-        University university = universityRepository.findByNameIgnoreCase(student.getUniversity().getName()).orElseGet(() -> {
+        University university = universityRepository.findByNameIgnoreCase(student.getUniversity().getName())
+        .orElseGet(() -> {
             University newUniversity = new University(student.getUniversity());
-            return universityRepository.save(newUniversity);
+            University savedUniversity = universityRepository.save(newUniversity);
+            System.out.println("Saved university ID: " + savedUniversity.getId());
+            return savedUniversity;
         });
+    
+        System.out.println("Using university ID: " + university.getId());
 
-        Student newStudent = new Student(student.getFirstName(), student.getLastName(), student.getEmail(), university ,student.getPassword(), student.getDob(), student.getSex());
+        Student newStudent = new Student(student.getFirstName(), student.getLastName(), student.getEmail(), university, student.getPassword(), student.getDob(), student.getSex());
         studentRepository.save(newStudent);
     }
 }

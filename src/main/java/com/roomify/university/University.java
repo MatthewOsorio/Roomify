@@ -22,8 +22,8 @@ import jakarta.persistence.UniqueConstraint;
 @Entity
 public class University {
     @Id
-    @SequenceGenerator(name = "student_sequence", sequenceName = "student_sequence", allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "student_sequence")
+    @SequenceGenerator(name = "university_sequence", sequenceName = "university_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "university_sequence")
     private Long id;
 
     private String name;
@@ -58,7 +58,7 @@ public class University {
     public University(UniversityDTO dto){
         this.name = dto.getName();
         this.city = dto.getCity();
-        this.street = dto.getState();
+        this.street = dto.getStreet();
         this.zipCode = dto.getZipCode();
         this.state = dto.getState();
     }

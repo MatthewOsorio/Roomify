@@ -7,7 +7,6 @@ public class StudentResponseDTO {
     private Long id;
     private String firstName;
     private String lastName;
-    private String email;
     private UniversityDTO university;
     private Integer age;
 
@@ -17,8 +16,7 @@ public class StudentResponseDTO {
     public StudentResponseDTO(Student student) {
         this.id = student.getId();
         this.firstName = student.getFirstName();
-        this.lastName    = student.getLastName();
-        this.email = student.getEmail();
+        this.lastName = student.getLastName();
         this.university = new UniversityDTO(student.getUniversity());
         this.age = student.getAge();
     }
@@ -35,10 +33,6 @@ public class StudentResponseDTO {
         return lastName;
     }
 
-    public String getEmail() {
-        return email;
-    }
-
     public UniversityDTO getUniversity() {
         return university;
     }
@@ -46,4 +40,5 @@ public class StudentResponseDTO {
     public Integer getAge() {
         return age;
     }
+    
 }
