@@ -37,10 +37,12 @@ jobs:
   
         - name: Override Spring Boot DB config for GitHub Actions
           run: |
+            mkdir -p src/test/resources
             echo "spring.datasource.url=jdbc:postgresql://localhost:5432/roomify" > src/test/resources/application.properties
             echo "spring.datasource.username=postgres" >> src/test/resources/application.properties
             echo "spring.datasource.password=password" >> src/test/resources/application.properties
             echo "spring.jpa.hibernate.ddl-auto=create-drop" >> src/test/resources/application.properties
+
   
         - name: Run tests
           run: mvn clean test
