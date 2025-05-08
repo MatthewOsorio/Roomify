@@ -1,18 +1,18 @@
 services:
   db:
-    container_name: postgres-spring-boot
     image: postgres:latest
+    container_name: postgres-spring-boot
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: password
+      POSTGRES_USER: ${SPRING_DATASOURCE_USERNAME}
+      POSTGRES_PASSWORD: ${SPRING_DATASOURCE_PASSWORD}
+      POSTGRES_DB: roomify
       PGDATA: /data/postgres
     volumes:
       - db:/data/postgres
     ports:
       - "5332:5432"
     networks:
-      - db
-    restart: unless-stopped
+      - app-network
 
   app:
     build:
@@ -21,15 +21,16 @@ services:
     container_name: roomify-app
     ports:
       - "8080:8080"
-    environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5332/roomify
-      SPRING_DATASOURCE_USERNAME: postgres
-      SPRING_DATASOURCE_PASSWORD: password
+    env_file:
+      - .env
     depends_on:
       - db
+    networks:
+      - app-network
 
 networks:
-  db:
+  app-network:
     driver: bridge
+
 volumes:
   db:
