@@ -1,73 +1,69 @@
-name: Test and Deploy to EC2
+name: CI/CD Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
 
 jobs:
-  test:
-      name: Run Tests
-      runs-on: ubuntu-latest
-  
-      services:
-        postgres:
-          image: postgres:latest
-          ports:
-            - 5432:5432
-          env:
-            POSTGRES_DB: roomify
-            POSTGRES_USER: postgres
-            POSTGRES_PASSWORD: password
-          options: >-
-            --health-cmd "pg_isready"
-            --health-interval 10s
-            --health-timeout 5s
-            --health-retries 5
-  
-      steps:
-        - name: Checkout code
-          uses: actions/checkout@v4
-  
-        - name: Set up Java
-          uses: actions/setup-java@v4
-          with:
-            java-version: '21'
-            distribution: 'temurin'
-  
-        - name: Override Spring Boot DB config for GitHub Actions
-          run: |
-            mkdir -p src/test/resources
-            echo "spring.datasource.url=jdbc:postgresql://localhost:5432/roomify" > src/test/resources/application.properties
-            echo "spring.datasource.username=postgres" >> src/test/resources/application.properties
-            echo "spring.datasource.password=password" >> src/test/resources/application.properties
-            echo "spring.jpa.hibernate.ddl-auto=create-drop" >> src/test/resources/application.properties
-
-  
-        - name: Run tests
-          run: mvn clean test
-        
-  deploy:
-    name: Deploy to EC2
-    needs: test
+  build-and-deploy:
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:latest
+        ports:
+          - 5332:5432
+        env:
+          POSTGRES_DB: roomify
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: password
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://localhost:5332/roomify
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: password
+
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - name: Checkout Repository
+        uses: actions/checkout@v3
 
-      - name: Set up SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.EC2_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+      - name: Set up Java
+        uses: actions/setup-java@v3
+        with:
+          java-version: '21'
+          distribution: 'temurin'
 
-      - name: Deploy via SSH
-        run: |
-          ssh -i ~/.ssh/id_rsa ubuntu@${{ secrets.EC2_HOST }} << 'EOF'
+      - name: Wait for Postgres to be ready
+        run: until pg_isready -h localhost -p 5332; do echo "Waiting for postgres..."; sleep 2; done
+
+      - name: Build and Test
+        run: mvn clean verify
+
+      - name: Copy files to EC2
+        if: success()
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "."
+          target: "~/Roomify"
+
+      - name: Deploy on EC2
+        if: success()
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
             cd ~/Roomify
-            git pull origin main
-            docker-compose down
+            docker-compose down || true
             docker-compose up --build -d
-          EOF
