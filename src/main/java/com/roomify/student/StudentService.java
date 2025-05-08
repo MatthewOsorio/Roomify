@@ -35,9 +35,8 @@ public class StudentService {
             return savedUniversity;
         });
     
-        System.out.println("Using university ID: " + university.getId());
-
         Student newStudent = new Student(student.getFirstName(), student.getLastName(), student.getEmail(), university, student.getPassword(), student.getDob(), student.getSex());
         studentRepository.save(newStudent);
     }
+    
 }

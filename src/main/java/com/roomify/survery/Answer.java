@@ -1,7 +1,6 @@
 package com.roomify.survery;
 
 import com.roomify.student.Student;
-import com.roomify.survery.SurveyDTO.AnswerDTO;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;

@@ -69,6 +69,7 @@ public class Student {
         this.dob = LocalDate.parse(dob);
         this.sex = sex;
     }
+    
 
     public Long getId() {
         return id;
@@ -129,6 +130,10 @@ public class Student {
 
     public Integer getAge() {
         return Period.between(dob, LocalDate.now()).getYears();
+    }
+
+    public LocalDate getDob() {
+        return dob;
     }
 
     public void addAnswer(Answer answer) {

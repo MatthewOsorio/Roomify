@@ -1,10 +1,9 @@
-package com.roomify.roomify;
-
+package com.roomify;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class RoomifyApplicationTests {
+class RoomifyApplicationTests extends PostgresTestContainer {
 
 	@Test
 	void contextLoads() {
